@@ -1,6 +1,10 @@
 [phases.setup]
-nixPkgs = ['chromium', 'chromedriver']
+nixPkgs = ['python39', 'chromium', 'chromedriver']
 
 [variables]
 CHROME_BIN = '/usr/bin/chromium'
-CHROMEDRIVER_PATH = '/usr/bin/chromedriver' 
+CHROMEDRIVER_PATH = '/usr/bin/chromedriver'
+PYTHONUNBUFFERED = "1"
+
+[start]
+cmd = "gunicorn app:app" 
