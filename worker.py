@@ -1,10 +1,19 @@
+import os
 from twitter_to_rss import TwitterToRSS
 from supabase import create_client
 from datetime import datetime
+from dotenv import load_dotenv
 
-# Initialize Supabase client
-supabase_url = 'https://vyfeecfsnvjanhzaojvq.supabase.co'
-supabase_key = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ5ZmVlY2ZzbnZqYW5oemFvanZxIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTczNDM0MDExNywiZXhwIjoyMDQ5OTE2MTE3fQ.cBjja9V92dT0-QYmNfIXEgCU00vE91ZXEetTyc-dmBM'
+# Load environment variables
+load_dotenv()
+
+# Initialize Supabase client using environment variables
+supabase_url = os.environ.get('SUPABASE_URL')
+supabase_key = os.environ.get('SUPABASE_KEY')
+
+if not supabase_url or not supabase_key:
+    raise ValueError("Missing required environment variables: SUPABASE_URL and SUPABASE_KEY")
+
 supabase = create_client(supabase_url, supabase_key)
 
 def get_existing_usernames():

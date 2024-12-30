@@ -3,17 +3,22 @@ from flask import Flask, render_template, request, send_file, flash, redirect, u
 from twitter_to_rss import TwitterToRSS
 from supabase import create_client
 from datetime import datetime
+import os
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
-app.secret_key = 'your-secret-key-here'
+app.secret_key = os.environ.get('FLASK_SECRET_KEY', 'your-secret-key-here')
 
-# Initialize Supabase client
-supabase_url = 'https://vyfeecfsnvjanhzaojvq.supabase.co'
-supabase_key = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ5ZmVlY2ZzbnZqYW5oemFvanZxIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTczNDM0MDExNywiZXhwIjoyMDQ5OTE2MTE3fQ.cBjja9V92dT0-QYmNfIXEgCU00vE91ZXEetTyc-dmBM'
+# Initialize Supabase client using environment variables
+supabase_url = os.environ.get('SUPABASE_URL')
+supabase_key = os.environ.get('SUPABASE_KEY')
 supabase = create_client(supabase_url, supabase_key)
 
 @app.route('/', methods=['GET', 'POST'])
