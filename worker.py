@@ -41,9 +41,10 @@ def update_feeds():
             
             # Upload to Supabase Storage
             file_name = f'{username}_feed.xml'
-            storage_response = supabase.storage.from_('my_x_rss').update(
-                file_name,
-                rss_content.encode()
+            storage_response = supabase.storage.from_('my_x_rss').upsert(
+                path=file_name,
+                file=rss_content.encode(),
+                content_type='application/xml'
             )
             
             # Update timestamp in database
