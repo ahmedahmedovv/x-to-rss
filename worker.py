@@ -3,6 +3,7 @@ from twitter_to_rss import TwitterToRSS
 from supabase import create_client
 from datetime import datetime
 from dotenv import load_dotenv
+import tempfile
 
 # Load environment variables
 load_dotenv()
@@ -39,20 +40,41 @@ def update_feeds():
             converter = TwitterToRSS(username)
             rss_content = converter.generate_rss_content()
             
-            # Upload to Supabase Storage
-            file_name = f'{username}_feed.xml'
-            storage_response = supabase.storage.from_('my_x_rss').upsert(
-                path=file_name,
-                file=rss_content.encode(),
-                content_type='application/xml'
-            )
+            # Create a temporary file
+            with tempfile.NamedTemporaryFile(mode='w+', suffix='.xml', delete=False) as temp_file:
+                temp_file.write(rss_content)
+                temp_file.flush()
+                temp_path = temp_file.name
             
-            # Update timestamp in database
-            supabase.table('my_x_rss').update({
-                'updated_at': datetime.now().isoformat()
-            }).eq('username', username).execute()
+            try:
+                # Upload to Supabase Storage
+                file_name = f'{username}_feed.xml'
+                
+                # First try to remove existing file (ignore errors if it doesn't exist)
+                try:
+                    supabase.storage.from_('my_x_rss').remove([file_name])
+                except:
+                    pass
+                
+                # Upload new file
+                with open(temp_path, 'rb') as f:
+                    storage_response = supabase.storage.from_('my_x_rss').upload(
+                        path=file_name,
+                        file=f,
+                        file_options={"content-type": "application/xml"}
+                    )
+                
+                # Update timestamp in database
+                supabase.table('my_x_rss').update({
+                    'updated_at': datetime.now().isoformat()
+                }).eq('username', username).execute()
+                
+                print(f"Successfully updated feed for @{username}")
             
-            print(f"Successfully updated feed for @{username}")
+            finally:
+                # Clean up temporary file
+                os.unlink(temp_path)
+                
         except Exception as e:
             print(f"Error updating feed for @{username}: {e}")
             continue
