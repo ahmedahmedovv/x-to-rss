@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Download RSS Feed</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>RSS Feed Generated!</h1>
+        <p>RSS feed for @{{ username }} has been generated successfully.</p>
+        <div class="feed-info">
+            <p>Your RSS feed URL:</p>
+            <code>{{ request.url_root }}{{ feed_url }}</code>
+        </div>
+        <div class="buttons">
+            <a href="{{ url_for('static', filename='feeds/' + username + '_feed.xml') }}" class="button">Download RSS Feed</a>
+            <a href="{{ url_for('index') }}" class="button secondary">Generate Another Feed</a>
+        </div>
+    </div>
+</body>
+</html> 
