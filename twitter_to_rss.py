@@ -105,6 +105,41 @@ class TwitterToRSS:
             if hasattr(self, 'driver'):
                 self.driver.quit()
 
+    def generate_rss_content(self):
+        """Generate RSS content and return as string instead of saving to file"""
+        try:
+            tweets = self.fetch_tweets()
+            
+            if not tweets:
+                print("No tweets were found. Creating empty RSS feed.")
+            
+            feed = Rss201rev2Feed(
+                title=f"Twitter Feed for @{self.username}",
+                link=self.base_url,
+                description=f"Latest tweets from @{self.username}",
+                language="en-us"
+            )
+            
+            for tweet in tweets:
+                try:
+                    feed.add_item(
+                        title=tweet['content'][:100] + "..." if len(tweet['content']) > 100 else tweet['content'],
+                        link=tweet.get('link', ''),
+                        description=tweet['content'],
+                        pubdate=datetime.fromisoformat(tweet['date'].replace('Z', '+00:00'))
+                    )
+                except Exception as e:
+                    print(f"Error adding tweet to RSS feed: {e}")
+                    continue
+            
+            from io import StringIO
+            output = StringIO()
+            feed.write(output, 'utf-8')
+            return output.getvalue()
+        finally:
+            if hasattr(self, 'driver'):
+                self.driver.quit()
+
 def main():
     username = input("Enter Twitter username (without @): ")
     converter = TwitterToRSS(username)
