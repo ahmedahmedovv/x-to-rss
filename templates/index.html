@@ -7,17 +7,19 @@
 <body>
     <div class="container">
         <h1>Twitter to RSS Converter</h1>
-        {% with messages = get_flashed_messages() %}
+        {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
-                {% for message in messages %}
-                    <div class="alert">{{ message }}</div>
+                {% for category, message in messages %}
+                    <div class="alert {{ category }}">{{ message }}</div>
                 {% endfor %}
             {% endif %}
         {% endwith %}
         <form method="POST">
             <div class="form-group">
                 <label for="username">Twitter Username (without @):</label>
-                <input type="text" id="username" name="username" required>
+                <input type="text" id="username" name="username" required 
+                       pattern="^[A-Za-z0-9_]{1,15}$" 
+                       title="Please enter a valid Twitter username (letters, numbers, and underscores only)">
             </div>
             <button type="submit">Generate RSS Feed</button>
         </form>

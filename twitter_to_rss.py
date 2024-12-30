@@ -136,6 +136,18 @@ class TwitterToRSS:
             output = StringIO()
             feed.write(output, 'utf-8')
             return output.getvalue()
+        except Exception as e:
+            print(f"Error generating RSS content: {e}")
+            # Return empty feed instead of boolean
+            empty_feed = Rss201rev2Feed(
+                title=f"Twitter Feed for @{self.username}",
+                link=self.base_url,
+                description=f"Latest tweets from @{self.username}",
+                language="en-us"
+            )
+            output = StringIO()
+            empty_feed.write(output, 'utf-8')
+            return output.getvalue()
         finally:
             if hasattr(self, 'driver'):
                 self.driver.quit()

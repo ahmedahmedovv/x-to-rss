@@ -10,10 +10,10 @@
         <p>RSS feed for @{{ username }} has been generated successfully.</p>
         <div class="feed-info">
             <p>Your RSS feed URL:</p>
-            <code>{{ request.url_root }}{{ feed_url }}</code>
+            <code>{{ feed_url }}</code>
         </div>
         <div class="buttons">
-            <a href="{{ url_for('static', filename='feeds/' + username + '_feed.xml') }}" class="button">Download RSS Feed</a>
+            <a href="{{ feed_url }}" class="button" target="_blank">View RSS Feed</a>
             <a href="{{ url_for('index') }}" class="button secondary">Generate Another Feed</a>
         </div>
     </div>
